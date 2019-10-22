@@ -5,6 +5,8 @@ print("Welcome to Treasure Island Scripter")
 apiKey = input("Please insert your API KEY: ")
 #confirm api key is valid
 
+direction = input("Please enter the direction to move")
+
 # print("\nPlease pick a command ")
 # print("1. Explore Map ")
 # print("2. Display Current Room  ")

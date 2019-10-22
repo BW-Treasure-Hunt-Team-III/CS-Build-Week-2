@@ -23,7 +23,7 @@ class Map:
 
         #check if room is already in self.data
         if str(roomID) in self.data:
-            print("room already exists")
+            print("Room already exists")
         else:
             newLocation = {
                 "title": newLocation['title'],
