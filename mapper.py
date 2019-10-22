@@ -16,7 +16,12 @@ class Map:
             #     print('')
 
     def addToMap(self, newLocation):
+
+        #with this function we can add a new object to our Room file, 
+        # #it will take the file and overwrite it with the new self.data
         roomID = newLocation["room_id"]
+
+        #check if room is already in self.data
         if str(roomID) in self.data:
             print("room already exists")
         else:
@@ -32,6 +37,13 @@ class Map:
 
             self.data[roomID] = newLocation
 
+            #write our self.data to the file. 
             with open('map.txt', 'w') as outfile:
                 json.dump(self.data, outfile)
-    
+
+            #needs to be done so that we have our object properties have updated map
+            self.loadMapFile()
+
+    def findPath(self, startID, endID):
+        #this function will find a path from start to finish, with id's and directions delivered for use by the scripter
+        pass
