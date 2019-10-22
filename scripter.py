@@ -37,6 +37,7 @@ class Scripter:
         # extracting data in json format 
         data = response.json() 
         #self.map.addToMap(data)
+        print(data["room_id"], "exists:", data["exits"])
 
 
     def addToMap(self, room=None):
@@ -45,10 +46,15 @@ class Scripter:
             url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move/"
             r = requests.post(url, headers=self.headers, json = {"direction": self.command}) 
             new_room = r.json()
-            print(new_room)
+            print('new room', new_room["cooldown"])
             self.map.addToMap(new_room)
         else:
             print("Not sure why its not working")
+
+    def moveToRoom(self, direction):
+            url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move/"
+            r = requests.post(url, headers=self.headers, json = {"direction": direction}) 
+            next_room = r.json()
 
     # def run(self):
 

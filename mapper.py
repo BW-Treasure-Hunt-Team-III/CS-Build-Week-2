@@ -17,6 +17,8 @@ class Map:
 
     def addToMap(self, newLocation):
 
+        print('newLocation', newLocation)
+
         #with this function we can add a new object to our Room file, 
         # #it will take the file and overwrite it with the new self.data
         roomID = newLocation["room_id"]

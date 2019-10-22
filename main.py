@@ -15,5 +15,6 @@ direction = input("Please enter the direction to move: ")
 # command = input("")
 
 scripter = Scripter(apiKey, command=direction)
+scripter.moveToRoom(direction)
 #scripter.getStatus()
-scripter.addToMap()
+#scripter.addToMap()
