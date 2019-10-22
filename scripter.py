@@ -10,7 +10,7 @@ class Scripter:
 
         self.url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/" #add additional url information at the end. 
         self.headers = {'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + apiKey} 
+                        'Authorization': 'Token ' + self.apiKey} 
 
         #map json will be used to pass map graph to other users. 
         self.map = mapJson 
@@ -31,7 +31,7 @@ class Scripter:
         self.player_messages = []
 
     def getStatus(self):
-        response = requests.get(self.url + 'status', headers=headers) 
+        response = requests.get(self.url + 'init', headers=self.headers) 
         # extracting data in json format 
         data = response.json() 
         print(data)
