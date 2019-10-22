@@ -1,5 +1,6 @@
 import sys
 import requests
+from mapper import Map
 
 class Scripter:
     #Main Script Class
@@ -13,7 +14,7 @@ class Scripter:
                         'Authorization': 'Token ' + self.apiKey} 
 
         #map json will be used to pass map graph to other users. 
-        self.map = mapJson 
+        self.map = Map()
 
         #whch command/script is currently running
         self.command = command
@@ -34,7 +35,7 @@ class Scripter:
         response = requests.get(self.url + 'init', headers=self.headers) 
         # extracting data in json format 
         data = response.json() 
-        print(data)
+        self.map.addToMap(data)
 
 
     # def addToMap(self, room):
