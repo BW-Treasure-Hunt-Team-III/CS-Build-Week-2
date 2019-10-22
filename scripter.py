@@ -1,5 +1,6 @@
 import sys
 import requests
+import json
 from mapper import Map
 
 class Scripter:
@@ -35,11 +36,19 @@ class Scripter:
         response = requests.get(self.url + 'init', headers=self.headers) 
         # extracting data in json format 
         data = response.json() 
-        self.map.addToMap(data)
+        #self.map.addToMap(data)
 
 
-    # def addToMap(self, room):
-    #     #add room information to the map
+    def addToMap(self, room=None):
+        #add room information to the map
+        if self.command:
+            url = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move/"
+            r = requests.post(url, headers=self.headers, json = {"direction": self.command}) 
+            new_room = r.json()
+            print(new_room)
+            self.map.addToMap(new_room)
+        else:
+            print("Not sure why its not working")
 
     # def run(self):
 

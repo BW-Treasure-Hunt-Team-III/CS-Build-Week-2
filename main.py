@@ -5,7 +5,7 @@ print("Welcome to Treasure Island Scripter")
 apiKey = input("Please insert your API KEY: ")
 #confirm api key is valid
 
-direction = input("Please enter the direction to move")
+direction = input("Please enter the direction to move: ")
 
 # print("\nPlease pick a command ")
 # print("1. Explore Map ")
@@ -14,6 +14,6 @@ direction = input("Please enter the direction to move")
 # print("4. Find/Sell Treasure ")
 # command = input("")
 
-scripter = Scripter(apiKey)
-
-scripter.getStatus()
+scripter = Scripter(apiKey, command=direction)
+#scripter.getStatus()
+scripter.addToMap()
