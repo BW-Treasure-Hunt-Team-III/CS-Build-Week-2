@@ -49,11 +49,6 @@ class Map:
         #this function will find a path from start to finish, with id's and directions delivered for use by the scripter
         pass
     
-    def getExitInfo(self, roomId):
-        try:
-            return self.data[roomId]['exits']
-        except:
-            return "error, exit unable to be found"
                               #0     , #5,      n
     def updateRoomExits(self, oldRoom, newRoom, direction):
 
@@ -67,3 +62,8 @@ class Map:
             if ea == -1:
                 return False
         return True
+
+    def getOneExit(self, roomId):
+        for key, value in self.data[roomId]:
+            if value == -1:
+                return key

@@ -67,11 +67,19 @@ class Scripter:
                     #update ids if we came from a previous room. 
                     self.map.updateRoomExits(previousRoom['room_id'], currentRoom['room_id'], direction)
 
+            #if all exits have been explored
             while self.map.unexploredExits(currentRoom['room_id']):
+                reverse_direction = reverse_path.pop()
+                self.travel(reverse_direction)
 
+            #go to first available exit in this current room. 
+            direction = self.map.getOneExit()
+            reverse_path.append(directions[direction])
+            self.travel(direction)
             
 
 
     def travel(self, direction):
-        pass
+        if direction == 'n':
+            response = requests.get(self.url + 'init', headers=self.headers) 
 
