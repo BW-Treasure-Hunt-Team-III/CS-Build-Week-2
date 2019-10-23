@@ -1,11 +1,12 @@
 import sys
 import requests
+import time
 from mapper import Map
 
 class Scripter:
     #Main Script Class
 
-    def __init__(self, key, mapJson=[], command=''):
+    def __init__(self, key, command='go to the nearest shrine'):
         #this will insert the api key into requests
         self.apiKey = key
 
@@ -30,39 +31,47 @@ class Scripter:
         self.player_status = [],
         self.player_errors = [],
         self.player_messages = []
+        self.player_location = ''
 
     def getStatus(self):
         response = requests.get(self.url + 'init', headers=self.headers) 
         # extracting data in json format 
         data = response.json() 
-        self.map.addToMap(data)
+
+        #set the player location & cooldown
+        self.player_location = data['room_id']
+        self.player_cooldown = data['cooldown']
+
+        #this add to map function sends our current information to our Map Class and makes sure that it is mappd. 
+        return data
 
 
-    # def addToMap(self, room):
-    #     #add room information to the map
+    def mapper(self):
+        #travel backwards to new exits
+        reverse_path = [] 
+        directions = {'n': 's', 's': 'n', 'w': 'e', 'e': 'w'}
 
-    # def run(self):
+        currentRoom = self.getStatus()
 
-    #   wait command based on cooldown
+        previousRoom = ''
+        direction = ''
 
-    #     #move north //or fly
+        while self.map.length < 499: #make sure we dont have all 500 rooms mapped already
+            time.sleep(self.player_cooldown) #this waits the cooldown timer amount
 
-    #     #move east //or fly
+            if self.map.checkIfRoomMapped(currentRoom['room_id']):
+                #because current room is not mapped, add  to map:
+                self.map.addToMap(currentRoom)
+                #check if we came from a previous direction
+                if previousRoom:
+                    #update ids if we came from a previous room. 
+                    self.map.updateRoomExits(previousRoom['room_id'], currentRoom['room_id'], direction)
 
-    #     #move west //or fly
+            while self.map.unexploredExits(currentRoom['room_id']):
 
-    #     #move south //or fly
+            
 
-    #     #take item
 
-    #     #drop item
+    def travel(self, direction):
+        pass
 
-    #     #sell treasure
-
-    #     #wear item
-
-    #     #pray at shrine
-
-    # def saveMapToJson(self):
-
-    #     #create a json object and file and store map for future usage. 
