@@ -13,6 +13,9 @@ CALL = 0b01010000
 ADD  = 0b10100000
 RET  = 0b00010001
 PRA  = 0b01001000
+AND  = 0b10101000
+XOR  = 0b10101011
+NOP  = 0b00000000
 
 class CPU:
     """Main CPU class."""
@@ -95,7 +98,7 @@ class CPU:
         while running:
     # Do stuff
             command = self.ram[self.pc]
-
+            print(f'{command} and pc is {self.pc}')
             if command == LDI: #LDI, needs register and numer
                 self.reg[self.ram[self.pc+1]] = self.ram[self.pc+2]
                 self.pc += 3
@@ -106,7 +109,6 @@ class CPU:
 
             elif command == HLT:
                 running = False
-                self.pc += 1
 
             elif command == MUL:
                 self.reg[self.ram[self.pc+2]]
@@ -143,7 +145,30 @@ class CPU:
                 reg = self.ram[self.pc + 1]
                 self.message.append(chr(self.reg[reg]))
                 self.pc += 2
+            
+            elif command == AND:
+                self.reg[self.ram[self.pc + 1]] = self.reg[self.ram[self.pc + 1]] & self.reg[self.ram[self.pc + 2]]
+                self.pc += 3
+
+            elif command == XOR:
+                self.reg[self.ram[self.pc + 1]] = self.reg[self.ram[self.pc + 1]] ^ self.reg[self.ram[self.pc + 2]]
+                self.pc += 3
+
+            elif command == NOP:
+                self.pc += 1
+
+                # count = 0
+                # final = ''
+                # while count < 7:
+
+                #     if str(self.ram[self.pc + 1])[count] == str(self.ram[self.pc + 2])[count]:
+                #         final += self.ram[self.pc + 1][count]
+                #     else:
+                #         final += str(0)
+                #     count += 1
                 
+                # self.register[self.pc + 1] = int(final)
+
             else:
                 print(f"Unknown instruction: {command}")
                 sys.exit(1)
