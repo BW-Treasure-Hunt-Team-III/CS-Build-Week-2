@@ -1,11 +1,8 @@
 import hashlib
 import requests
-
 import sys
 
-
 from timeit import default_timer as timer
-
 import random
 
 
@@ -48,7 +45,6 @@ def valid_proof(last_proof, proof):
 
 
 if __name__ == '__main__':
-
 
     coins_mined = 0
 

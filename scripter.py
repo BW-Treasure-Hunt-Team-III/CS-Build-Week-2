@@ -4,6 +4,8 @@ import time
 from mapper import Map
 import random
 
+from cpu import *
+
 class Scripter:
     #Main Script Class
 
@@ -17,6 +19,9 @@ class Scripter:
 
         #map json will be used to pass map graph to other users. 
         self.map = Map()
+
+        #CPU translator
+        self.cpu = CPU()
 
         #whch command/script is currently running
         self.command = command
@@ -79,6 +84,13 @@ class Scripter:
 
         print(f'room {destination} reached')
 
+    def getCoin(self, amount)
+        coinsMined = 0
+
+        while coinsMined < amount:
+            newLocation = self.wishingWell()
+            self.findPath(newLocation)
+
     def getGold(self, amount):
         while self.player_gold < amount:
             if self.player_encumbrance < self.player_strength - 2:
@@ -133,6 +145,32 @@ class Scripter:
                     time.sleep(self.player_cooldown)
                     self.getStatus()
                     print(self.player_gold)
+
+    def wishingWell(self):
+        path = self.map.findPath(self.player_location, 55)
+        path.pop(0)
+        print(path)
+        for roomId in path:
+            direction = self.map.findDirection(self.player_location, roomId)
+            time.sleep(self.player_cooldown)
+            currentRoom = self.travel(direction)
+            self.player_cooldown = currentRoom['cooldown']
+            self.player_location = currentRoom['room_id']
+        json = {"name":"wishing well"}
+        time.sleep(self.player_cooldown)
+        response = requests.post(self.url + 'examine', headers=self.headers, json=json)
+        data = response.json() 
+
+        #write the wishing well message to wishingwell.txt
+        with open('wishingwell.txt', 'w') as outfile:
+             outfile.write(data['description'][39:])
+             outfile.close()
+        self.cpu.load('wishingwell.txt')
+        
+
+        self.player_cooldown = data['cooldown']
+        time.sleep(self.player_cooldown)
+        return ''.join(self.cpu.run()[23:])
 
     def changeName(self, newName):
         #467

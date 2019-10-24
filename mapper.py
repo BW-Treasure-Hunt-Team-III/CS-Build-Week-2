@@ -2,6 +2,8 @@ import json
 from stack import Stack
 
 
+
+
 class Map:
 
     #this initiation function has an empty data file. but by running self.loadMapFile(), we fill it with our JSON object of locations which is basically a dictionary/graph
@@ -11,16 +13,12 @@ class Map:
         self.loadMapFile()
         self.length = len(self.data)
 
+
     def loadMapFile(self):
         with open('map.txt') as json_file:
             self.data = json.load(json_file)
         with open('map2.txt') as json_file:
             self.important = json.load(json_file)
-            # for location in data['locations']:
-            #     print('Title: ' + location['title'])
-            #     print('Description: ' + location['description'])
-            #     print('Id: ' + location['id'])
-            #     print('')
 
     def checkIfRoomMapped(self, roomId):
         #this function lets you know if the room you are in has already been mapped. 
@@ -34,12 +32,6 @@ class Map:
         #with this function we can add a new object to our Room file, 
         # #it will take the file and overwrite it with the new self.data
         roomId = newLocation["room_id"]
-
-        #check if room is already in self.data
-        # newLocation = {
-        #     "room_id": newLocation['room_id'],
-        #     "exits": {x:-1 for x in newLocation['exits']},
-        # }
 
         if newLocation['title'] != "A misty room":
             self.important[roomId] = newLocation['title']
