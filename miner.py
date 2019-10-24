@@ -2,8 +2,6 @@ import hashlib
 import requests
 
 import sys
-
-
 from timeit import default_timer as timer
 
 import random
@@ -24,53 +22,33 @@ def proof_of_work(last_proof, difficulty):
 
     print("Searching for next proof")
     proof = 0
-    
-    while valid_proof(last_proof, proof) is False:
-        proof += 1
+    attempts = 0
+    while valid_proof(last_proof, proof, difficulty) is False:
+        proof = random.randint(0, 950000000)
+        attempts += 1
+
+        if attempts >= 8000000:
+            return ''
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
 
-def valid_proof(last_proof, proof):
+def valid_proof(last_proof, proof, difficulty):
     """
     Validates the Proof:  Multi-ouroborus:  Do the last six characters of
     the hash of the last proof match the first six characters of the proof?
     IE:  last_hash: ...AE9123456, new hash 123456888...
     """
 
-    last_hash = hashlib.sha256(f'{last_proof}'.encode()).hexdigest()
+    #last_hash = hashlib.sha256(f'{last_proof}'.encode()).hexdigest()
 
     guess = f'{last_proof}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
+
+    if difficulty is not None:
+        leading_zeros = "0" * difficulty
+    else:
+        leading_zeros = "0" * 6
     
-    return guess_hash[0:2] == last_hash[-2:]
-
-
-if __name__ == '__main__':
-
-
-    coins_mined = 0
-
-    # Run forever until interrupted
-    for i in range(0, 50):
-        # Get the last proof from the server
-        headers = {'Content-Type': 'application/json', 'Authorization': 'Token 636d48a60803e8f600139e8a47d731a28141474b'}  
-
-        r = requests.get(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof", headers=headers)
-        data = r.json()
-        new_proof = proof_of_work(data.get('proof'), data.get('difficulty'))
-        
-
-        post_data = {"proof": new_proof}
-
-
-        r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers = headers, json=post_data)
-        data = r.json()
-
-        print(data)
-        # if data.get('message') == 'New Block Forged':
-        #     coins_mined += 1
-        #     print("Total coins mined: " + str(coins_mined))
-        # else:
-        #     print(data.get('message'))
+    return guess_hash[0:difficulty] == leading_zeros
