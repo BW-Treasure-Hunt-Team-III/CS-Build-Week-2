@@ -40,7 +40,7 @@ class Scripter:
         self.player_errors = [],
         self.player_messages = []
         self.player_location = ''
-        self.player_mine = ''
+        self.player_mine = '131'
 
     def getInit(self):
         response = requests.get(self.url + 'init', headers=self.headers) 
@@ -114,12 +114,18 @@ class Scripter:
 
                 new_proof = proof_of_work(data.get('proof'), data.get('difficulty'))
 
-            post_data = {"proof": new_proof}
+                post_data = {"proof": new_proof}
 
-            r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers=self.headers, json=post_data)
+                r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers=self.headers, json=post_data)
 
-            data = r.json()
+                data = r.json()
 
+                if data['errors'][0] = 'Proof already submitted: +10s CD':
+                    new_proof = ''
+                
+                self.player_cooldown = data['cooldown']
+                time.sleep(self.player_cooldown)
+            
             print(data)
             self.player_cooldown = data['cooldown']
             coinsMined += 1
