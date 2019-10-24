@@ -5,12 +5,15 @@ class Map:
     #this initiation function has an empty data file. but by running self.loadMapFile(), we fill it with our JSON object of locations which is basically a dictionary/graph
     def __init__(self):
         self.data = {}
+        self.important = {}
         self.loadMapFile()
         self.length = len(self.data)
 
     def loadMapFile(self):
         with open('map.txt') as json_file:
             self.data = json.load(json_file)
+        with open('map2.txt') as json_file:
+            self.important = json.load(json_file)
             # for location in data['locations']:
             #     print('Title: ' + location['title'])
             #     print('Description: ' + location['description'])
@@ -36,14 +39,25 @@ class Map:
         #     "exits": {x:-1 for x in newLocation['exits']},
         # }
 
+        if newLocation['title'] != "A misty room":
+            self.important[roomId] = newLocation['title']
+
         self.data[roomId] = {x:-1 for x in newLocation['exits']}
 
         #write our self.data to the file. 
         with open('map.txt', 'w') as outfile:
             json.dump(self.data, outfile)
+        
+        with open('map2.txt', 'w') as outfile:
+            json.dump(self.important, outfile)
 
         #needs to be done so that we have our object properties have updated map
         self.loadMapFile()
+
+    def knowId(self, roomId, direction):
+        if self.data[str(roomId)][direction] != -1:
+            return str(self.data[str(roomId)][direction])
+        return False
 
     def findPath(self, startID, endID):
         #this function will find a path from start to finish, with id's and directions delivered for use by the scripter
@@ -52,18 +66,20 @@ class Map:
                               #0     , #5,      n
     def updateRoomExits(self, oldRoom, newRoom, direction):
 
+        print(f'updating exits for room {oldRoom} and {newRoom} after travelling {direction}')
         directions = {'n': 's', 's': 'n', 'w': 'e', 'e': 'w'}
 
-        self.data[oldRoom][direction] = newRoom
-        self.data[newRoom][directions[direction]] = oldRoom
+        self.data[str(oldRoom)][direction] = newRoom
+        self.data[str(newRoom)][directions[direction]] = oldRoom
 
     def unexploredExits(self, roomId):
-        for ea in self.data[roomId]:
-            if ea == -1:
+        for key, value in self.data[str(roomId)].items():
+
+            if value == -1:
                 return False
         return True
 
     def getOneExit(self, roomId):
-        for key, value in self.data[roomId]:
+        for key, value in self.data[str(roomId)].items():
             if value == -1:
                 return key

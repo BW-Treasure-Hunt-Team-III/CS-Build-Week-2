@@ -7,4 +7,5 @@ apiKey = input("Please insert your API KEY: ")
 
 scripter = Scripter(apiKey)
 
-scripter.getStatus()
+#scripter.getStatus()
+scripter.mapper()
