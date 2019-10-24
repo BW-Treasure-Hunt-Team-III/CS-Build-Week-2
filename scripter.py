@@ -2,9 +2,11 @@ import sys
 import requests
 import time
 from mapper import Map
+from miner import *
+from cpu import *
+
 import random
 
-from cpu import *
 
 class Scripter:
     #Main Script Class
@@ -38,6 +40,7 @@ class Scripter:
         self.player_errors = [],
         self.player_messages = []
         self.player_location = ''
+        self.player_mine = ''
 
     def getInit(self):
         response = requests.get(self.url + 'init', headers=self.headers) 
@@ -73,8 +76,8 @@ class Scripter:
 
     def findPath(self, destination):
         path = self.map.findPath(self.player_location, destination)
-        path.pop(0)
         print(path)
+        path.pop(0)
         for roomId in path:
             direction = self.map.findDirection(self.player_location, roomId)
             time.sleep(self.player_cooldown)
@@ -84,12 +87,44 @@ class Scripter:
 
         print(f'room {destination} reached')
 
-    def getCoin(self, amount)
+    def getCoin(self, amount):
+        
         coinsMined = 0
+        new_proof = ''
 
         while coinsMined < amount:
-            newLocation = self.wishingWell()
-            self.findPath(newLocation)
+            if self.player_mine == '':
+                newLocation = self.wishingWell()
+            else:
+                newLocation = self.player_mine
+            path = self.map.findPath(self.player_location, int(newLocation))
+            print(path)
+            path.pop(0)
+            for roomId in path:
+                direction = self.map.findDirection(self.player_location, roomId)
+                time.sleep(self.player_cooldown)
+                currentRoom = self.travel(direction)
+                self.player_cooldown = currentRoom['cooldown']
+                self.player_location = currentRoom['room_id']
+
+            #get last proof
+            while new_proof == '':
+                response = requests.get("https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof", headers=self.headers)
+                data = response.json() 
+
+                new_proof = proof_of_work(data.get('proof'), data.get('difficulty'))
+
+            post_data = {"proof": new_proof}
+
+            r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers=self.headers, json=post_data)
+
+            data = r.json()
+
+            print(data)
+            self.player_cooldown = data['cooldown']
+            coinsMined += 1
+            self.player_mine = ''
+            time.sleep(self.player_cooldown)
 
     def getGold(self, amount):
         while self.player_gold < amount:
@@ -170,6 +205,7 @@ class Scripter:
 
         self.player_cooldown = data['cooldown']
         time.sleep(self.player_cooldown)
+        self.player_mine = ''.join(self.cpu.run()[23:])
         return ''.join(self.cpu.run()[23:])
 
     def changeName(self, newName):
