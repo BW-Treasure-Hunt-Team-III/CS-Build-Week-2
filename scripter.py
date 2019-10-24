@@ -120,7 +120,7 @@ class Scripter:
 
                 data = r.json()
 
-                if data['errors'][0] = 'Proof already submitted: +10s CD':
+                if data['errors'][0] == 'Proof already submitted: +10s CD':
                     new_proof = ''
                 
                 self.player_cooldown = data['cooldown']
