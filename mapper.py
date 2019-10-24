@@ -1,4 +1,6 @@
 import json
+from stack import Stack
+
 
 class Map:
 
@@ -61,7 +63,29 @@ class Map:
 
     def findPath(self, startID, endID):
         #this function will find a path from start to finish, with id's and directions delivered for use by the scripter
-        pass
+        """
+        Return a list containing a path from
+        starting_vertex to destination_vertex in
+        depth-first order.
+        """
+        visited = []
+        stack = Stack()
+        stack.push([startID])
+
+        while stack.size() > 0:
+            shortest_path = stack.pop()
+            vertex = shortest_path[-1]
+            if vertex not in visited:
+                print(f'{vertex} and {endID}')
+                if vertex is endID:
+                    return shortest_path
+                visited.append(vertex)
+                for key, value in self.data[str(vertex)].items():
+                    new_shortest_path = list(shortest_path)
+                    new_shortest_path.append(value)
+                    stack.push(new_shortest_path)
+        
+        return None
     
                               #0     , #5,      n
     def updateRoomExits(self, oldRoom, newRoom, direction):

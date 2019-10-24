@@ -46,6 +46,8 @@ class Scripter:
         #this add to map function sends our current information to our Map Class and makes sure that it is mappd. 
         return data
 
+    def findPath(self, destination):
+        print(self.map.findPath(self.player_location, destination))
 
     def mapper(self):
         #travel backwards to new exits

@@ -7,5 +7,6 @@ apiKey = input("Please insert your API KEY: ")
 
 scripter = Scripter(apiKey)
 
-#scripter.getStatus()
-scripter.mapper()
+scripter.getStatus()
+scripter.findPath(319)
+# scripter.mapper()
