@@ -25,26 +25,28 @@ def proof_of_work(last_proof, difficulty):
     print("Searching for next proof")
     proof = 0
     
-    while valid_proof(last_proof, proof) is False:
+    while valid_proof(last_proof, proof, difficulty) is False:
         proof += 1
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
 
-def valid_proof(last_proof, proof):
+def valid_proof(last_proof, proof, difficulty):
     """
     Validates the Proof:  Multi-ouroborus:  Do the last six characters of
     the hash of the last proof match the first six characters of the proof?
     IE:  last_hash: ...AE9123456, new hash 123456888...
     """
 
-    last_hash = hashlib.sha256(f'{last_proof}'.encode()).hexdigest()
+    #last_hash = hashlib.sha256(f'{last_proof}'.encode()).hexdigest()
 
     guess = f'{last_proof}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
+
+    leading_zeros = "0" * difficulty
     
-    return guess_hash[0:2] == last_hash[-2:]
+    return guess_hash[0:difficulty] == leading_zeros
 
 
 if __name__ == '__main__':
@@ -69,6 +71,7 @@ if __name__ == '__main__':
         data = r.json()
 
         print(data)
+
         # if data.get('message') == 'New Block Forged':
         #     coins_mined += 1
         #     print("Total coins mined: " + str(coins_mined))
