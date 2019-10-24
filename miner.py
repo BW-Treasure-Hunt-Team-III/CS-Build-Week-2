@@ -44,7 +44,10 @@ def valid_proof(last_proof, proof, difficulty):
     guess = f'{last_proof}{proof}'.encode()
     guess_hash = hashlib.sha256(guess).hexdigest()
 
-    leading_zeros = "0" * difficulty
+    if difficulty is not None:
+        leading_zeros = "0" * difficulty
+    else:
+        leading_zeros = "0" * 6
     
     return guess_hash[0:difficulty] == leading_zeros
 
