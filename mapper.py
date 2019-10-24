@@ -76,8 +76,8 @@ class Map:
             shortest_path = stack.pop()
             vertex = shortest_path[-1]
             if vertex not in visited:
-                print(f'{vertex} and {endID}')
-                if vertex is endID:
+                # print(f'{vertex} and {endID}')
+                if vertex == endID:
                     return shortest_path
                 visited.append(vertex)
                 for key, value in self.data[str(vertex)].items():
@@ -106,4 +106,9 @@ class Map:
     def getOneExit(self, roomId):
         for key, value in self.data[str(roomId)].items():
             if value == -1:
+                return key
+
+    def findDirection(self, roomId, nextId):
+        for key, value in self.data[str(roomId)].items():
+            if value == nextId:
                 return key
