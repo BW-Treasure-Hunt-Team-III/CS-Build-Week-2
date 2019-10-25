@@ -1,9 +1,6 @@
 import json
 from stack import Stack
 
-
-
-
 class Map:
 
     #this initiation function has an empty data file. but by running self.loadMapFile(), we fill it with our JSON object of locations which is basically a dictionary/graph
