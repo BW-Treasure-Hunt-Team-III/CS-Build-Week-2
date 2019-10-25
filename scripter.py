@@ -145,7 +145,7 @@ class Scripter:
         while self.player_gold < amount:
             if self.player_encumbrance < self.player_strength - 2:
                 #go to a random room path
-                path = self.map.findPath(self.player_location, 128)
+                path = self.map.findPath(self.player_location, random.randint(2,499))
                 #check for an item. 
                 path.pop(0)
                 print(path)
@@ -156,7 +156,6 @@ class Scripter:
                     print(currentRoom)
                     self.player_cooldown = currentRoom['cooldown']
                     self.player_location = currentRoom['room_id']
-                    list_of_rooms = [22, 55, 461, 467, 495, 499, 2, 4, 8, 16, 32, 64, 128, 256]
                     for item in currentRoom['items']:
                         time.sleep(self.player_cooldown)
                         json = {"name":item}
