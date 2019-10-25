@@ -1,0 +1,28 @@
+		"DuckEverlasting": 2045, mining
+		"arronm": 1140, mining
+		"server": 890,  #not mining
+		"Zezima": 560,
+		"Leviathan": 485,  #not mining
+		"Dewayne": 315,  #not mining
+
+		needed:
+g
+
+ if i == 22 or i == 55 or i == 461 or i == 467 or i == 495 or i == 499:
+elif i == 2 or i == 4 or i == 8 or i == 16 or i == 32 or i == 64 or i == 128 or i == 256:
+
+use judgement too create mobile layout
+font awesome
+
+import bootstrap.
+
+override if needed. 
+
+hambrger nav
+
+trajen font 
+
+spreadsheet with start end 
+
+primitive 3d math
+intersections

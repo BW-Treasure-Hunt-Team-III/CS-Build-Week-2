@@ -22,8 +22,7 @@ class Scripter:
         #map json will be used to pass map graph to other users. 
         self.map = Map()
 
-        #CPU translator
-        self.cpu = CPU()
+
 
         #whch command/script is currently running
         self.command = command
@@ -40,7 +39,7 @@ class Scripter:
         self.player_errors = [],
         self.player_messages = []
         self.player_location = ''
-        self.player_mine = '131'
+        self.player_mine = ''
 
     def getInit(self):
         response = requests.get(self.url + 'init', headers=self.headers) 
@@ -75,7 +74,9 @@ class Scripter:
         return data
 
     def findPath(self, destination):
+        time.sleep(self.player_cooldown)
         path = self.map.findPath(self.player_location, destination)
+        
         print(path)
         path.pop(0)
         for roomId in path:
@@ -93,35 +94,41 @@ class Scripter:
         new_proof = ''
 
         while coinsMined < amount:
-            if self.player_mine == '':
-                newLocation = self.wishingWell()
-            else:
-                newLocation = self.player_mine
+            # if self.player_mine == '':
+            newLocation = self.wishingWell()
+            # else:
+            #newLocation = 242
             path = self.map.findPath(self.player_location, int(newLocation))
+
             print(path)
+
             path.pop(0)
             for roomId in path:
+
                 direction = self.map.findDirection(self.player_location, roomId)
                 time.sleep(self.player_cooldown)
                 currentRoom = self.travel(direction)
                 self.player_cooldown = currentRoom['cooldown']
                 self.player_location = currentRoom['room_id']
+                #print(currentRoom)
 
             #get last proof
             while new_proof == '':
                 response = requests.get("https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof", headers=self.headers)
                 data = response.json() 
-
+                print(data.get('difficulty'))
                 new_proof = proof_of_work(data.get('proof'), data.get('difficulty'))
 
-                post_data = {"proof": new_proof}
+                if new_proof != '':
+                    post_data = {"proof": new_proof}
 
-                r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers=self.headers, json=post_data)
+                    r = requests.post(url="https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/", headers=self.headers, json=post_data)
 
-                data = r.json()
+                    data = r.json()
 
-                if data['errors'][0] == 'Proof already submitted: +10s CD':
-                    new_proof = ''
+                    for errors in data['errors']:
+                        if errors == 'Proof already submitted: +10s CD':
+                            new_proof = ''
                 
                 self.player_cooldown = data['cooldown']
                 time.sleep(self.player_cooldown)
@@ -130,14 +137,15 @@ class Scripter:
             self.player_cooldown = data['cooldown']
             coinsMined += 1
             self.player_mine = ''
+            new_proof = ''
             time.sleep(self.player_cooldown)
 
     def getGold(self, amount):
+        print(self.player_gold)
         while self.player_gold < amount:
             if self.player_encumbrance < self.player_strength - 2:
-                randomRoom = random.randint(2,499)
                 #go to a random room path
-                path = self.map.findPath(self.player_location, randomRoom)
+                path = self.map.findPath(self.player_location, 128)
                 #check for an item. 
                 path.pop(0)
                 print(path)
@@ -148,6 +156,7 @@ class Scripter:
                     print(currentRoom)
                     self.player_cooldown = currentRoom['cooldown']
                     self.player_location = currentRoom['room_id']
+                    list_of_rooms = [22, 55, 461, 467, 495, 499, 2, 4, 8, 16, 32, 64, 128, 256]
                     for item in currentRoom['items']:
                         time.sleep(self.player_cooldown)
                         json = {"name":item}
@@ -195,6 +204,7 @@ class Scripter:
             direction = self.map.findDirection(self.player_location, roomId)
             time.sleep(self.player_cooldown)
             currentRoom = self.travel(direction)
+            #print(currentRoom)
             self.player_cooldown = currentRoom['cooldown']
             self.player_location = currentRoom['room_id']
         json = {"name":"wishing well"}
@@ -205,14 +215,16 @@ class Scripter:
         #write the wishing well message to wishingwell.txt
         with open('wishingwell.txt', 'w') as outfile:
              outfile.write(data['description'][39:])
-             outfile.close()
-        self.cpu.load('wishingwell.txt')
+        outfile.close()
+        #CPU translator
+        cpu = CPU()
+        cpu.load('wishingwell.txt')
         
 
         self.player_cooldown = data['cooldown']
         time.sleep(self.player_cooldown)
-        self.player_mine = ''.join(self.cpu.run()[23:])
-        return ''.join(self.cpu.run()[23:])
+        self.player_mine = ''.join(cpu.run()[23:])
+        return self.player_mine
 
     def changeName(self, newName):
         #467
@@ -294,14 +306,14 @@ class Scripter:
             self.player_cooldown = currentRoom['cooldown']
             self.player_location = currentRoom['room_id']
 
-    def travel(self, direction):
+    def travel(self, direction, withDash=False):
         print(f'we are moving {direction}')
 
         if direction == 'n':
             json = {"direction":"n"}
             if self.map.knowId(self.player_location, direction):
                 json["next_room_id"] = self.map.knowId(self.player_location, direction)
-            response = requests.post(self.url + 'move', headers=self.headers, json=json)
+            response = requests.post(self.url + 'fly', headers=self.headers, json=json)
             data = response.json() 
             return data
 
@@ -309,7 +321,7 @@ class Scripter:
             json = {"direction":"e"}
             if self.map.knowId(self.player_location, direction):
                 json["next_room_id"] = self.map.knowId(self.player_location, direction)
-            response = requests.post(self.url + 'move', headers=self.headers, json=json) 
+            response = requests.post(self.url + 'fly', headers=self.headers, json=json) 
             data = response.json() 
             return data
 
@@ -317,7 +329,7 @@ class Scripter:
             json = {"direction":"s"}
             if self.map.knowId(self.player_location, direction):
                 json["next_room_id"] = self.map.knowId(self.player_location, direction)
-            response = requests.post(self.url + 'move', headers=self.headers, json=json) 
+            response = requests.post(self.url + 'fly', headers=self.headers, json=json) 
             data = response.json() 
             return data
 
@@ -325,7 +337,7 @@ class Scripter:
             json = {"direction":"w"}
             if self.map.knowId(self.player_location, direction):
                 json["next_room_id"] = self.map.knowId(self.player_location, direction)
-            response = requests.post(self.url + 'move', headers=self.headers, json=json) 
+            response = requests.post(self.url + 'fly', headers=self.headers, json=json) 
             data = response.json() 
             return data
 

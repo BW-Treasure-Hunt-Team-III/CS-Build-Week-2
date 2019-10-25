@@ -98,7 +98,6 @@ class CPU:
         while running:
     # Do stuff
             command = self.ram[self.pc]
-            print(f'{command} and pc is {self.pc}')
             if command == LDI: #LDI, needs register and numer
                 self.reg[self.ram[self.pc+1]] = self.ram[self.pc+2]
                 self.pc += 3
@@ -172,6 +171,7 @@ class CPU:
             else:
                 print(f"Unknown instruction: {command}")
                 sys.exit(1)
+        
         return self.message
 
 
